@@ -1,7 +1,11 @@
 FROM mattermost/mattermost-enterprise-edition:6.6.1
 
-ENV TZ=UTC
-ENV MM_SQLSETTINGS_DRIVERNAME=postgres
-ENV MM_SQLSETTINGS_DATASOURCE=${DATABASE_URL}
-ENV MM_BLEVESETTINGS_INDEXDIR=/mattermost/bleve-indexes
-ENV MM_SERVICESETTINGS_SITEURL=https://${DOMAIN}
+# Install shdotenv to use .env
+USER root
+RUN curl -sfL https://github.com/ko1nksm/shdotenv/releases/latest/download/shdotenv | install /dev/stdin /usr/bin/shdotenv
+USER mattermost
+
+COPY .env /
+COPY dokku-entrypoint.sh /
+ENTRYPOINT ["/dokku-entrypoint.sh"]
+CMD ["mattermost"]
